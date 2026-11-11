@@ -1,0 +1,8 @@
+{"title":"What if you never slept?","kicker":"WHAT IF?","handle":"@yourchannel","voice":"en-US-AndrewNeural",
+"scenes":[
+{"narration":"What if you never needed to sleep again?","headline":"What if you never slept?","visual":"title","palette":"midnight","data":{"sub":"Day one is amazing"}},
+{"narration":"You would gain about eight extra hours every single day.","headline":"Hours gained per year","visual":"counter","palette":"ocean","data":{"value":2920,"suffix":" hrs","label":"extra waking time per year","decimals":0}},
+{"narration":"But the brain pays the price quickly, and focus drops after one night.","headline":"Focus after no sleep","visual":"bars","palette":"ember","data":{"items":[{"label":"Day 1","value":85},{"label":"Day 2","value":60},{"label":"Day 3","value":35}],"unit":"%"}},
+{"narration":"Here is what would start to happen to your body.","headline":"What breaks first","visual":"list","palette":"violet","data":{"items":["Memory gets patchy","Mood swings hit hard","Immune system weakens","Microsleeps take over"]}},
+{"narration":"Follow for more what if stories.","headline":"Follow for more","visual":"title","palette":"forest","data":{"sub":"New episode daily"}}
+]}
