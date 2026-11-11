@@ -1,0 +1,53 @@
+name: tts
+on:
+  workflow_dispatch:
+    inputs:
+      job_id:
+        description: job id
+        required: true
+      script_b64:
+        description: base64 script json
+        required: true
+permissions:
+  contents: write
+jobs:
+  tts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+      - uses: actions/cache@v4
+        with:
+          path: ~/vs-data
+          key: voicestudio-data-v1
+      - name: Start VoiceStudio
+        run: |
+          KEY=$(openssl rand -hex 16)
+          echo "VS_KEY=$KEY" >> "$GITHUB_ENV"
+          mkdir -p ~/vs-data && chmod -R 777 ~/vs-data
+          docker run -d --name vs -p 127.0.0.1:3900:3900 \
+            -e OMNIVOICE_API_KEY="$KEY" \
+            -e OMNIVOICE_DATA_DIR=/app/omnivoice_data \
+            -e HF_HOME=/app/omnivoice_data/hf \
+            -e HF_TOKEN="${{ secrets.HF_TOKEN }}" \
+            -v "$HOME/vs-data:/app/omnivoice_data" \
+            ghcr.io/debpalash/voicestudio:stable
+      - name: Generate audio
+        env:
+          SCRIPT_B64: ${{ github.event.inputs.script_b64 }}
+        run: python3 vs_tts.py
+      - name: Container log on failure
+        if: failure()
+        run: docker logs vs 2>&1 | tail -80
+      - name: Fix cache permissions
+        if: success()
+        run: sudo chown -R "$USER" ~/vs-data
+      - name: Publish audio
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_ID: ${{ github.event.inputs.job_id }}
+        run: |
+          cd out && zip -r ../audio.zip . && cd ..
+          gh release create "audio-$JOB_ID" audio.zip --title "audio-$JOB_ID" --notes "tts"
